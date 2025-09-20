@@ -37,6 +37,12 @@ export default function RootLayout({
       >
         <Header />
         {children}
+        <footer className="mt-12 w-full bg-[#18392b] py-4 text-center text-white">
+          <span className="text-sm">
+            &copy; {new Date().getFullYear()} Jewellery App. All rights
+            reserved.
+          </span>
+        </footer>
       </body>
     </html>
   );
