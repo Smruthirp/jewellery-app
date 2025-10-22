@@ -16,6 +16,7 @@ import { Button } from "@/app/ui/button";
 
 interface HeroSlide {
   imageSrc: string;
+  videoSrc?: string;
   title?: string;
   subtitle?: string;
   buttonText?: string;
@@ -73,14 +74,24 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
           {slides.map((slide, idx) => (
             <CarouselItem
               key={idx}
-              className="relative h-[80vh] w-full flex-shrink-0"
+              className="relative h-[93vh] w-full flex-shrink-0"
             >
-              <Image
-                src={slide.imageSrc}
-                alt={slide.title ?? `Slide ${idx + 1}`}
-                fill
-                className="h-full w-full object-cover"
-              />
+              {slide.videoSrc ? (
+                <video
+                  src={slide.videoSrc}
+                  autoPlay
+                  loop
+                  muted
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={slide.imageSrc}
+                  alt={slide.title ?? `Slide ${idx + 1}`}
+                  fill
+                  className="h-full w-full object-cover"
+                />
+              )}
               {slide.title && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/50 px-12 text-white">
                   <motion.h2

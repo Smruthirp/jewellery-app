@@ -1,7 +1,5 @@
 "use client";
 
-import { ProductCard } from "@/app/components/products/product-card";
-import { cn } from "@/app/lib/tailwind";
 import { Button } from "@/app/ui/button";
 import { CategoryCard } from "../category/category-card";
 import { ArrowRight } from "lucide-react";

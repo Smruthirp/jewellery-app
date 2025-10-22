@@ -9,6 +9,7 @@ import { USP_ITEMS } from "./components/landing-hero/landing-hero.constants";
 const slides = [
   {
     imageSrc: "/images/hero-3.avif",
+    videoSrc: "/videos/video.mp4",
     title: "Welcome to Our Store",
     subtitle:
       "Discover our curated collection of fine jewellery, designed to celebrate every moment",
@@ -33,7 +34,7 @@ export default function Home() {
   return (
     <div className="">
       <main className="bg-[#f5eee6]">
-        <HeroCarousel slides={slides} autoPlay={true} autoPlayInterval={3000} />
+        <HeroCarousel slides={slides} autoPlay={true} autoPlayInterval={5000} />
         <FillerSection />
         <ScrollingBanner
           content={[

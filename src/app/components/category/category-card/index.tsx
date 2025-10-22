@@ -14,7 +14,7 @@ export const CategoryCard = ({ imageUrl, title, href }: Props) => {
         initial={{ x: 100, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 60, damping: 12 }}
-        viewport={{ once: false, amount: 0.4 }}
+        viewport={{ once: false, amount: 0.1 }}
         whileHover={{ scale: 1.05 }}
         className="flex w-xs flex-col items-center rounded-lg bg-[#18392b] p-4 text-white shadow-lg"
       >

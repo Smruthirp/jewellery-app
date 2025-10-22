@@ -54,6 +54,7 @@ export default function Header() {
                       <Link
                         key={subItem.href}
                         href={subItem.href}
+                        onClick={() => setIsSubmenuOpen(!isSubmenuOpen)}
                         className="hover:text-[#f5eee6]] px-3 py-2 text-sm font-semibold whitespace-nowrap transition-colors hover:border-b"
                       >
                         {subItem.label}
