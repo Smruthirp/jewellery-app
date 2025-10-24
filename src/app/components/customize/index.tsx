@@ -74,6 +74,12 @@ export default function CustomJewelryForm() {
                 required
                 className="w-full rounded-full border border-gray-300 px-6 py-3 focus:ring-2 focus:ring-black focus:outline-none"
               />
+              <input
+                type="tel"
+                placeholder="Whats app number*"
+                required
+                className="w-full rounded-full border border-gray-300 px-6 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+              />
               <textarea
                 placeholder="Message*"
                 required
@@ -86,7 +92,9 @@ export default function CustomJewelryForm() {
                 <input
                   type="file"
                   accept="image/*"
+                  placeholder="Choose files for customization"
                   className="w-full rounded-md border border-gray-300 px-4 py-2"
+                  multiple
                 />
               </label>
             </div>
