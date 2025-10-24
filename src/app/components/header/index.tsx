@@ -1,72 +1,109 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { SITE_TITLE } from "../../constants/global";
-import { NAV_ITEMS } from "./header.constants";
+import { LEFT_NAV_ITEMS, RIGHT_NAV_ITEMS } from "./header.constants";
 import { cn } from "@/app/lib/tailwind";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { NavBar } from "./nav-bar";
+import { MobileHeader } from "./mobile-header";
+import { ScrollingBanner } from "../banner/scrolling-banner";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function Header() {
+export const Header = () => {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  return (
-    <header className="relative z-50 flex w-full items-center justify-between bg-[#18392b] px-8 py-5 text-white shadow-md">
-      <Link
-        href="/"
-        className="cursor-pointer text-2xl font-bold tracking-wide"
-      >
-        {SITE_TITLE}
-      </Link>
-      <nav className="relative">
-        <ul className="flex gap-8 text-lg font-medium">
-          {NAV_ITEMS.map((item, index) => (
-            <li key={item.href ?? index} className="group relative">
-              <Link
-                href={item.href ?? ""}
-                {...(item.subnav && {
-                  onClick: () => setIsSubmenuOpen(!isSubmenuOpen),
-                })}
-                className="relative transition-colors duration-300 hover:text-[#f5eee6]"
-              >
-                <span>{item.label}</span>
-                <span
-                  className={cn(
-                    "absolute -bottom-1 left-0 h-[2px] w-0 bg-[#f5eee6] transition-all duration-300 group-hover:w-full",
-                    {
-                      "w-full": isSubmenuOpen && item.subnav,
-                    },
-                  )}
-                  aria-hidden="true"
-                />
-              </Link>
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
-              {/* Submenu */}
-              {item.subnav && (
-                <div
-                  className={cn(
-                    "pointer-events-none fixed top-18 left-0 z-50 w-full bg-[#18392bcc] py-4 text-white opacity-0 shadow-md transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100",
-                    {
-                      "pointer-events-auto opacity-100": isSubmenuOpen,
-                    },
-                  )}
-                >
-                  <div className="mx-auto flex max-w-screen-xl gap-6 px-8">
-                    {item.subnav.map((subItem) => (
-                      <Link
-                        key={subItem.href}
-                        href={subItem.href}
-                        onClick={() => setIsSubmenuOpen(!isSubmenuOpen)}
-                        className="hover:text-[#f5eee6]] px-3 py-2 text-sm font-semibold whitespace-nowrap transition-colors hover:border-b"
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </header>
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    const handleResize = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    if (window && window.scrollY > 50) {
+      setIsScrolled(true);
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <>
+      {/* Mobile Header */}
+      <MobileHeader />
+
+      {/* Desktop Header */}
+      <header
+        className={cn(
+          "z-50 hidden w-full transition-all duration-300 md:block",
+          {
+            "fixed top-0 right-0 left-0": isHomePage, // Add left-0 right-0 for proper width handling
+            relative: !isHomePage,
+          },
+        )}
+        style={isHomePage ? { width: "100vw" } : undefined} // Ensure full viewport width when fixed
+      >
+        <AnimatePresence>
+          {isHomePage && !isScrolled && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              style={{ overflow: "hidden" }}
+            >
+              <ScrollingBanner
+                bannerText="Gold price today: 12000/g | Silver price today: 150/g"
+                classname={cn("py-1 text-sm text-white/80")}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div
+          className={cn(
+            "grid w-full grid-cols-3 items-center px-12 py-5 text-white lg:px-20",
+            {
+              "border-b border-white/50 bg-[#18392b]/50":
+                isHomePage && !isScrolled,
+              "bg-[#18392b] shadow-md":
+                (isHomePage && isScrolled) || !isHomePage,
+            },
+          )}
+        >
+          <NavBar
+            navItems={LEFT_NAV_ITEMS}
+            isSubmenuOpen={isSubmenuOpen}
+            setIsSubmenuOpen={setIsSubmenuOpen}
+            className="justify-start"
+          />
+
+          <Link
+            href="/"
+            className="cursor-pointer text-center text-3xl font-bold tracking-wide"
+          >
+            {SITE_TITLE}
+          </Link>
+
+          <NavBar
+            navItems={RIGHT_NAV_ITEMS}
+            isSubmenuOpen={isSubmenuOpen}
+            setIsSubmenuOpen={setIsSubmenuOpen}
+            className="justify-self-end"
+          />
+        </div>
+      </header>
+    </>
   );
-}
+};

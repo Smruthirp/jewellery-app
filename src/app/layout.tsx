@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, DM_Serif_Text } from "next/font/google";
 import "./globals.css";
-import Header from "./components/header";
+import { Header } from "./components/header";
 import { SITE_DESCRIPTION, SITE_TITLE } from "./constants/global";
 
 const dmSerif = DM_Serif_Text({

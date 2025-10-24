@@ -1,5 +1,5 @@
 import { LandingHero } from "@/app/components/landing-hero";
-import { ProductsComponent } from "@/app/components/products";
+import { ProductsComponent } from "@/app/components/products-grid";
 import ringsData from "@/app/mocks/rings-data.json";
 import { ProductType } from "@/app/types/products.types";
 
@@ -12,7 +12,7 @@ export default function RingsPage() {
       <ProductsComponent
         productsData={ringsData as ProductType[]}
         hasFilters={false}
-        className="p-12"
+        className="p-6 md:p-12"
       />
     </div>
   );

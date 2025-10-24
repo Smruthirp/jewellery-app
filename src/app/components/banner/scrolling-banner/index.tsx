@@ -1,66 +1,51 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-
-type BannerItem =
-  | { type: "text"; value: string }
-  | { type: "button"; label: string; href: string };
+import { useRef } from "react";
+import { motion, useAnimationFrame } from "framer-motion";
+import { cn } from "@/app/lib/tailwind";
 
 interface ScrollingBannerProps {
-  content: BannerItem[];
-  speed?: number;
+  bannerText: string;
+  classname?: string;
 }
 
 export const ScrollingBanner = ({
-  content,
-  speed = 30,
+  bannerText,
+  classname,
 }: ScrollingBannerProps) => {
+  const baseVelocity = -100;
+  const repeatCount = 10;
+  const repeatedText = Array.from({ length: repeatCount }).map((_, i) => (
+    <span key={i} className="px-2">
+      {bannerText}
+    </span>
+  ));
+  const x = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [repeatCount, setRepeatCount] = useState(2);
 
-  useEffect(() => {
-    if (containerRef.current && contentRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const contentWidth = contentRef.current.offsetWidth;
-
-      const needed = Math.ceil(containerWidth / contentWidth) * 4;
-      setRepeatCount(needed > 1 ? needed : 2);
-    }
-  }, [content]);
-
-  const repeatedItems = Array.from(
-    { length: repeatCount },
-    () => content,
-  ).flat();
+  useAnimationFrame((t, delta) => {
+    if (!containerRef.current) return;
+    const width = containerRef.current.scrollWidth / 2;
+    x.current += (baseVelocity * delta) / 1000;
+    if (x.current <= -width) x.current = 0;
+    containerRef.current.style.transform = `translateX(${x.current}px)`;
+  });
 
   return (
     <div
-      ref={containerRef}
-      className="w-full overflow-hidden bg-[#18392b] text-white"
+      className={cn(
+        `relative overflow-hidden bg-[#18392b] py-3 text-nowrap text-white`,
+        classname,
+      )}
     >
-      <div
-        ref={contentRef}
-        className="animate-scroll flex w-max items-center gap-8 px-6 py-3 whitespace-nowrap"
-        style={{ animationDuration: `${speed}s` }}
+      <motion.div
+        ref={containerRef}
+        className="flex space-x-8"
+        style={{ willChange: "transform" }}
       >
-        {repeatedItems.map((item, index) =>
-          item.type === "text" ? (
-            <span key={`text-${index}`} className="text-base font-medium">
-              {item.value}
-            </span>
-          ) : (
-            <Link
-              key={`btn-${index}`}
-              href={item.href}
-              className="inline-block rounded-md border border-white px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-white hover:text-[#18392b]"
-            >
-              {item.label}
-            </Link>
-          ),
-        )}
-      </div>
+        {repeatedText}
+        {repeatedText}
+      </motion.div>
     </div>
   );
 };

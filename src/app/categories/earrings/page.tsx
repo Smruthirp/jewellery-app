@@ -1,5 +1,5 @@
 import { LandingHero } from "@/app/components/landing-hero";
-import { ProductsComponent } from "@/app/components/products";
+import { ProductsComponent } from "@/app/components/products-grid";
 import earringsData from "@/app/mocks/earrings-data.json";
 import { ProductType } from "@/app/types/products.types";
 
@@ -15,7 +15,7 @@ export default function EarringsPage() {
       <ProductsComponent
         productsData={earringsData as ProductType[]}
         hasFilters={false}
-        className="p-12"
+        className="p-6 md:p-12"
       />
     </div>
   );

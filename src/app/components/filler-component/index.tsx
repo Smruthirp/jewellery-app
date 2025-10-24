@@ -29,7 +29,7 @@ const Categories = [
 
 export const FillerSection = () => {
   return (
-    <section className="flex flex-row items-center gap-8 overflow-x-auto bg-white p-10 pl-20">
+    <section className="flex flex-col items-center gap-8 overflow-x-auto bg-white p-6 md:flex-row md:p-10 md:pl-20">
       <Button
         size="lg"
         iconPosition="right"
@@ -38,7 +38,7 @@ export const FillerSection = () => {
       >
         Categories
       </Button>
-      <div className="flex flex-row gap-6">
+      <div className="grid grid-cols-4 gap-6 md:flex md:flex-row">
         {Categories.map((category) => (
           <CategoryCard key={category.title} {...category} />
         ))}

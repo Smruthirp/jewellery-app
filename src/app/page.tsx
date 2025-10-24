@@ -1,6 +1,6 @@
 import { FillerSection } from "./components/filler-component";
 import { LandingHero } from "./components/landing-hero";
-import { ProductsComponent } from "./components/products";
+import { ProductsComponent } from "./components/products-grid";
 import products from "@/app/mocks/product-data.json";
 import { ProductType } from "./types/products.types";
 import { ScrollingBanner } from "./components/banner/scrolling-banner";
@@ -36,20 +36,14 @@ export default function Home() {
       <main className="bg-[#f5eee6]">
         <HeroCarousel slides={slides} autoPlay={true} autoPlayInterval={5000} />
         <FillerSection />
-        <ScrollingBanner
-          content={[
-            { type: "text", value: "Dont miss out on our exclusive offers!" },
-            { type: "button", label: "Shop Now", href: "/products" },
-          ]}
-          speed={10}
-        />
+        <ScrollingBanner bannerText="🚀 Don't miss out on our exclusive offers!" />
         <LandingHero
           subItems={USP_ITEMS}
           images={["/images/rings-image.jpg", "/images/earrings.jpg"]}
         />
         <ProductsComponent
           productsData={products as ProductType[]}
-          className="p-16"
+          className="p-6 md:p-16"
         />
       </main>
     </div>

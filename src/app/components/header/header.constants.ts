@@ -1,4 +1,4 @@
-export const NAV_ITEMS = [
+export const RIGHT_NAV_ITEMS = [
   {
     label: "Categories",
     subnav: [
@@ -10,5 +10,5 @@ export const NAV_ITEMS = [
     ],
   },
   { label: "Shop Products", href: "/products" },
-  { label: "Customise", href: "/customize" },
 ];
+export const LEFT_NAV_ITEMS = [{ label: "Customize", href: "/customize" }];

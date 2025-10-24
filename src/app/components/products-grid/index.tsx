@@ -15,9 +15,9 @@ export const ProductsComponent = ({
   className?: string;
 }) => {
   return (
-    <section
+    <div
       className={cn(
-        "grid grid-cols-1 gap-6 bg-white p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+        "grid grid-cols-2 gap-2 bg-white p-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4",
         className,
       )}
     >
@@ -33,6 +33,6 @@ export const ProductsComponent = ({
       {productsData.map((product, index) => (
         <ProductCard key={`${product.title}-${index}`} {...product} />
       ))}
-    </section>
+    </div>
   );
 };

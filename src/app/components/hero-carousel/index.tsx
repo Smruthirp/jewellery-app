@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import {
-  Carousel,
-  CarouselApi,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/app/ui/carousel";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { EmblaOptionsType, EmblaCarouselType } from "embla-carousel";
+import { NavButton, usePrevNextButtons } from "@/app/ui/carousel-arrow-buttons";
+import Autoplay from "embla-carousel-autoplay";
+import useEmblaCarousel from "embla-carousel-react";
+import { ArrowRight, ChevronRightIcon } from "lucide-react";
 import { Button } from "@/app/ui/button";
 
 interface HeroSlide {
@@ -34,47 +30,58 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
   autoPlay = true,
   autoPlayInterval = 5000,
 }) => {
-  const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
-    undefined,
-  );
+  const options: EmblaOptionsType = { loop: true };
+  const [emblaRef, emblaApi] = useEmblaCarousel(options, [
+    Autoplay({ delay: autoPlayInterval, stopOnInteraction: false }),
+  ]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
+
+  const onNavButtonClick = useCallback(
+    (emblaApi: EmblaCarouselType) => {
+      const autoplay = emblaApi?.plugins()?.autoplay;
+      if (!autoplay || !autoPlay) return;
+
+      const resetOrStop =
+        autoplay.options.stopOnInteraction === false
+          ? autoplay.reset
+          : autoplay.stop;
+
+      resetOrStop();
+    },
+    [autoPlay],
+  );
+
+  const {
+    prevBtnDisabled,
+    nextBtnDisabled,
+    onPrevButtonClick,
+    onNextButtonClick,
+  } = usePrevNextButtons(emblaApi, onNavButtonClick);
 
   useEffect(() => {
-    if (!carouselApi) return;
+    if (!emblaApi) return;
 
     const onSelect = () => {
-      const idx = carouselApi.selectedScrollSnap();
+      const idx = emblaApi.selectedScrollSnap();
       setCurrentIndex(idx);
     };
-
-    // when API is ready
-    carouselApi.on("select", onSelect);
+    emblaApi.on("select", onSelect);
 
     return () => {
-      carouselApi.off("select", onSelect);
+      emblaApi.off("select", onSelect);
     };
-  }, [carouselApi]);
-
-  // Autoplay
-  useEffect(() => {
-    if (!carouselApi || !autoPlay) return;
-
-    const interval = setInterval(() => {
-      const next = (carouselApi.selectedScrollSnap() + 1) % slides.length;
-      carouselApi.scrollTo(next);
-    }, autoPlayInterval);
-
-    return () => clearInterval(interval);
-  }, [carouselApi, autoPlay, slides.length, autoPlayInterval]);
+  }, [emblaApi]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-black">
-      <Carousel setApi={setCarouselApi} className="w-full">
-        <CarouselContent className="w-full">
+    <div className="relative w-screen overflow-hidden bg-black">
+      <div className="h-screen overflow-hidden" ref={emblaRef}>
+        <div className="flex h-full touch-pan-y touch-pinch-zoom">
           {slides.map((slide, idx) => (
-            <CarouselItem
-              key={idx}
-              className="relative h-[93vh] w-full flex-shrink-0"
+            <div
+              key={`Slide ${idx + 1}`}
+              className="relative h-full min-w-0 flex-shrink-0 flex-grow-0"
+              style={{ flex: "0 0 100%" }}
             >
               {slide.videoSrc ? (
                 <video
@@ -82,7 +89,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
                   autoPlay
                   loop
                   muted
-                  className="h-full w-full object-cover"
+                  className="size-full object-cover"
                 />
               ) : (
                 <Image
@@ -119,37 +126,62 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
                     >
                       {slide.subtitle}
                       {slide.buttonText && (
-                        <Button className="w-fit" variant={"white"} size={"lg"}>
+                        <Button
+                          className="group w-fit duration-300 ease-in"
+                          variant={"white"}
+                          size={"lg"}
+                          onMouseEnter={() => setIsButtonHovered(true)}
+                          onMouseLeave={() => setIsButtonHovered(false)}
+                        >
                           <span>{slide.buttonText}</span>
-                          <ArrowRight size={16} />
+                          <div className="relative ml-2 flex items-center justify-center">
+                            <motion.div
+                              animate={{
+                                opacity: isButtonHovered ? 0 : 1,
+                                scale: isButtonHovered ? 0.8 : 1,
+                              }}
+                              transition={{ duration: 0.2, ease: "circIn" }}
+                              className="absolute"
+                            >
+                              <ChevronRightIcon className="size-6" />
+                            </motion.div>
+                            <motion.div
+                              animate={{
+                                opacity: isButtonHovered ? 1 : 0,
+                                scale: isButtonHovered ? 1 : 0.8,
+                              }}
+                              transition={{ duration: 0.2, ease: "circIn" }}
+                              className="absolute"
+                            >
+                              <ArrowRight className="size-6" />
+                            </motion.div>
+                          </div>
                         </Button>
                       )}
                     </motion.p>
                   )}
                 </div>
               )}
-            </CarouselItem>
+            </div>
           ))}
-        </CarouselContent>
-        <CarouselPrevious className="hidden" />
-        <CarouselNext className="hidden" />
-      </Carousel>
-      <div className="absolute bottom-16 left-10 flex items-center space-x-2">
-        <Button
-          className="rounded-full bg-white/30 p-2 text-white hover:bg-white hover:text-[#18392b]"
-          size={"lg"}
-          onClick={() => carouselApi?.scrollPrev()}
-        >
-          <ChevronLeft size={16} />
-        </Button>
-        <Button
-          className="rounded-full bg-white/30 p-2 text-white hover:bg-white hover:text-[#18392b]"
-          size={"lg"}
-          onClick={() => carouselApi?.scrollNext()}
-        >
-          <ChevronRight />
-        </Button>
+        </div>
       </div>
+
+      <div className="absolute bottom-16 left-10 flex items-center space-x-2">
+        <NavButton
+          onClick={onPrevButtonClick}
+          disabled={prevBtnDisabled}
+          className="rounded-full bg-white/30 p-2 text-white hover:bg-white hover:text-[#18392b] disabled:opacity-50"
+          direction="left"
+        />
+        <NavButton
+          onClick={onNextButtonClick}
+          disabled={nextBtnDisabled}
+          className="rounded-full bg-white/30 p-2 text-white hover:bg-white hover:text-[#18392b] disabled:opacity-50"
+          direction="right"
+        />
+      </div>
+
       <div className="absolute bottom-12 left-10 h-1 w-44 bg-[#18392b]">
         <div
           className="h-full bg-white transition-all duration-300"
